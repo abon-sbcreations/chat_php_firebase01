@@ -1,0 +1,82 @@
+@charset "utf-8";
+/* CSS Document */
+body {
+	margin:0px;
+	padding:0px;
+}
+.fixeddivnav {
+	display:block;
+	width:100%;
+	position:fixed;
+	height:60px;
+	background-color:#000106;
+}
+.fixeddivnavback {
+	display:block;
+	width:100%;
+	height:60px;
+	background-color:#000106;
+}
+.underfixdiv {
+	width:1000px;
+	margin:auto;
+	display:block;
+	height:100%;
+}
+.logopart {
+	display:inline-block;
+	width:250px;
+	height:100%;
+	float:left;
+}
+
+.manupart {
+	display:inline-block;
+	float:left;
+	width:500px;
+	height:100%;
+	vertical-align:middle;
+	text-align:center;
+}
+.manu-link {
+	text-decoration:none;
+	line-height:60px;
+	color:#c8c8ca;
+	font-family:"open Sans";
+	font-style:inherit;
+	font-size:16px;
+	padding:3px;
+	margin:auto;
+}
+.manu-link:hover  {
+	color:#fff;
+	text-decoration:none;
+}
+
+.profilepart {
+	text-decoration:none;
+	text-align:right;
+	line-height:75px;
+	color:#c8c8ca;
+	font-family:"open Sans";
+	display:inline-block;
+	float:left;
+	width:250px;
+	height:100%;
+}
+.profileparticon {
+	margin-left:10px;
+	margin-top:10px;
+}
+.profileicon {
+	display:block;
+	width:40px;
+	height:40px;
+	border-radius:50%;
+	background-color:#333;
+	margin-top:7px;
+	float:right;
+	border: 2px solid  #85bd3b;
+	
+}
+
