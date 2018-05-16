@@ -2,7 +2,6 @@
 session_start();
 
 $session_id = session_id();
-print_r($session_id);
 $dbhost = 'localhost';
 $dbuser = 'root';
 $dbpass = '';
@@ -92,7 +91,7 @@ if (mysqli_num_rows($result) > 0) {
             </div>
             <div class="content">
                 <div class="contact-profile">
-                    <p id="chatTo">abhik</p>
+                    <p id="chatTo">Select One</p>
                     <div class="social-media">
                         <i class="fa fa-facebook" aria-hidden="true"></i>
                         <i class="fa fa-twitter" aria-hidden="true"></i>
@@ -101,15 +100,7 @@ if (mysqli_num_rows($result) > 0) {
                 </div>
                 <div class="messages">
                     <ul>
-                        <li class="sent">
-                            <h2>Abon</h2>
-                            <p>How the hell am I supposed to get a jury to believe you when I am not even sure that I do?!</p>
-                        </li>
-                        <li class="replies">
-                            <h2>Abhik</h2>
-                            <p>When you're backed against the wall, break the god damn thing down.</p>
-                        </li>
-
+                       
                     </ul>
                 </div>
                 <div class="message-input">
@@ -132,13 +123,22 @@ if (mysqli_num_rows($result) > 0) {
             var user_name = "";
             var present_chat = "";
             var combine_id = '';
+             var idleState = false;
+        var idleTimer = null;
             firebase.initializeApp(firebase_config);
             $(document).ready(function () {
-                user_id = 2;                
+                $(".message-input input").attr('disabled','disabled');
+               
+        $('*').bind('mousemove click mouseup mousedown keydown keypress keyup submit change mouseenter scroll resize dblclick', function () {
+            clearTimeout(idleTimer);
+            idleState = false;
+            idleTimer = setTimeout(function () { 
+              
+                idleState = true; }, 5000);
+        });
+        $("body").trigger("mousemove");
             });
-            firebase.database().ref().orderByChild('to_id').equalTo('2').on("value", function (snapshot) {
-                    console.log(snapshot);
-            });
+            
             $(".messages").animate({scrollTop: $(document).height()}, "fast");
 
             $("#profile-img").click(function () {
@@ -196,15 +196,18 @@ if (mysqli_num_rows($result) > 0) {
                 if ($.trim(message) == '') {
                     return false;
                 }
-                $("<li class='sent'><h2><?= $user_name ?></h2>"
-                        + "<p>" + message + "</p></li>")
-                        .appendTo($('.messages ul'));
                 $('.message-input input').val(null);
                 $('.contact.active .preview').html('<span>You: </span>' + message);
                 $(".messages").animate({scrollTop: $(document).height()}, "fast");
             }
             ;
-
+            idleTimer = null;
+            idleState = false;
+            idleWait = 1000;
+             
+            if (idleState == true) { 
+                
+            }
             $('.submit').click(function () {
                 newMessage();
             });
@@ -221,24 +224,21 @@ if (mysqli_num_rows($result) > 0) {
                 $(document).on("click", "#user_" + id, function () {
                     user_id = id;
                     var from_id = <?= $_SESSION['logged_user'] ?>;
-                    var idArr = [from_id,user_id];
-                    idArr = idArr.sort();
-                    combine_id = idArr[0]+"_"+idArr[1];
-                    console.log(combine_id);
-                    user_name = row['username'];
+                    $(".message-input input").removeAttr('disabled');  
+                    combine_id = from_id > user_id ? user_id+"_"+from_id : from_id+"_"+user_id;
+                   user_name = row['username'];
                     $("#chatTo").html(row['username']);
                     $(".messages ul").html("");
                     var chatRef = firebase.database().ref().child('chats').orderByChild("from_to_combine_id").equalTo(combine_id);
                         chatRef.on("child_added",function(snap){
                             var rec = snap.val();
-                            console.log(rec);
                             if(rec['from_id']==from_id){
                                 
-                                $("<li class='sent'><h2><?=$user_name?></h2>"
+                                $("<li class='sent'>"
                         + "<p>" + rec['message'] + "</p></li>")
                         .appendTo($('.messages ul'));
                             }else{
-                                $("<li class='replies'><h2><?=$user_name?></h2>"
+                                $("<li class='replies'>"
                                     + "<p>" + rec['message'] + "</p></li>")
                                     .appendTo($('.messages ul'));
                             }

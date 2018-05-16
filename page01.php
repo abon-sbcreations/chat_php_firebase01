@@ -1,4 +1,5 @@
 <?php
+ob_start();
 if ($_POST) {
      $dbhost = 'localhost';
    $dbuser = 'root';
@@ -16,8 +17,10 @@ if ($_POST) {
    if (mysqli_num_rows($result) > 0) {
       while($row = mysqli_fetch_assoc($result)) {
          session_start();
+         
          $_SESSION["logged_user"] = $row["id"];
          header("Location: page02.php");
+         
       }
    } else {
       echo "0 results";
