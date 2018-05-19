@@ -11,6 +11,7 @@ $conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
 if (!$conn) {
     die('Could not connect: ' . mysqli_error());
 }
+
 $sql = "SELECT * from user";
 $result = mysqli_query($conn, $sql);
 $users = [];
@@ -75,13 +76,11 @@ if (mysqli_num_rows($result) > 0) {
                         <li class="contact">
                             <div class="wrap">
                                 <span class="contact-status online"></span>
-<?php foreach ($users as $k => $usr) { ?>
+                        <?php foreach ($users as $k => $usr) { ?>
                                     <div id="user_<?= $k ?>" class="meta">
                                         <p class="name"><?= $usr['username'] ?></p>
                                     </div>
-<?php }
-?>
-
+                        <?php } ?>
                             </div>
                         </li>
 
@@ -133,10 +132,67 @@ if (mysqli_num_rows($result) > 0) {
             clearTimeout(idleTimer);
             idleState = false;
             idleTimer = setTimeout(function () { 
-              
-                idleState = true; }, 5000);
-        });
-        $("body").trigger("mousemove");
+                var totalChats = [];
+                var chatIds = [];
+                    var fromRef = firebase.database().ref().child('chats').orderByChild("from_id").equalTo(<?=$_SESSION['logged_user']?>);
+                    var toRef = firebase.database().ref().child('chats').orderByChild("to_id").equalTo('<?=$_SESSION['logged_user']?>');
+               var callFrom = function(){
+                       // console.log('callFrom');
+                        fromRef.on("value",function(snap){
+                          //  console.log(1);
+                           var snaps = snap.val();
+                           // console.log(snaps);
+                           $.each(snaps, function( key, row ) {
+                             //  console.log(2+" "+key);
+                               chatIds.push(key);
+                               totalChats.push(row);
+                           });
+                            
+                        });
+                    };    
+                  var callTo = function(){
+                       // console.log('callTo');
+                        toRef.on("value",function(snap){
+                            //console.log(3);
+                           var snaps = snap.val();                           
+                          // console.log(snaps);
+                           $.each(snaps, function( key, row ) {
+                               //console.log(4+" "+key);
+                               chatIds.push(key);
+                               totalChats.push(row);
+                           });
+                        });
+                    };
+                   var sendToSql = function(){
+                      // console.log('sendToSql');
+                       if(totalChats.length > 0){
+                       // console.log(5);
+                        $.ajax({
+                            type: 'POST',
+                            url: "page02Ajax.php",
+                            data: {'totalChats':totalChats},  
+                            async:false,
+                            success: function(result){
+                                if(result.length > 0 ){
+                                   // console.log(6);
+                                    console.log(result);
+                                }
+                            }                            
+                        });
+                       }
+                        // console.log(7);  
+                    };
+                   var dfd = $.Deferred();
+                        dfd
+                        // .done() can take any number of functions or arrays of functions
+                            .done( [ callFrom, callTo ], sendToSql ); 
+                    dfd.resolve( "and" );
+                        //console.log("chat ROW = "+totalChats.length);
+                        
+                        //console.log(chatIds);
+                    idleState = true; }, 5000);
+                });
+                $("body").trigger("mousemove");
             });
             
             $(".messages").animate({scrollTop: $(document).height()}, "fast");
@@ -190,7 +246,6 @@ if (mysqli_num_rows($result) > 0) {
                     'ip': ip,
                     'from_id': from_id,
                     'to_id': to_id,
-                    'from_to_combine_id':combine_id,
                     'current_time': $.now()
                 });
                 if ($.trim(message) == '') {
