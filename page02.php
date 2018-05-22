@@ -37,7 +37,7 @@ if (mysqli_num_rows($result) > 0) {
 <!DOCTYPE html><html class=''>
     <head>
         <script src="library/js/jquery.min.js" type="text/javascript"></script>
-        <script src="library/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+        <script src="library/js/bootstrap.min.js" type="text/javascript"></script>
 
         <link href="library/css/myCss01.css" rel="stylesheet" type="text/css"/>
     </head>
@@ -134,8 +134,8 @@ if (mysqli_num_rows($result) > 0) {
             idleTimer = setTimeout(function () { 
                 var totalChats = [];
                 var chatIds = [];
-                    var fromRef = firebase.database().ref().child('chats').orderByChild("from_id").equalTo(<?=$_SESSION['logged_user']?>);
-                    var toRef = firebase.database().ref().child('chats').orderByChild("to_id").equalTo('<?=$_SESSION['logged_user']?>');
+               var fromRef = firebase.database().ref().child('chats').orderByChild("from_id").equalTo(<?=$_SESSION['logged_user']?>);
+               var toRef = firebase.database().ref().child('chats').orderByChild("to_id").equalTo('<?=$_SESSION['logged_user']?>');
                var callFrom = function(){
                        // console.log('callFrom');
                         fromRef.on("value",function(snap){
@@ -158,8 +158,8 @@ if (mysqli_num_rows($result) > 0) {
                           // console.log(snaps);
                            $.each(snaps, function( key, row ) {
                                //console.log(4+" "+key);
-                               chatIds.push(key);
-                               totalChats.push(row);
+                               //chatIds.push(key);
+                             //  totalChats.push(row);
                            });
                         });
                     };

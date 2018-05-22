@@ -1,5 +1,6 @@
 <?php ?>
 <html>
+<link href="library/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
 <link rel="stylesheet" href="assets/css/headercss.css">
 <body>
 <div class="fixeddivnav">

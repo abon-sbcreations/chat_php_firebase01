@@ -115,48 +115,49 @@ if (mysqli_num_rows($result) > 0) {
             $.each(users, function (id, row) {
                 $(document).on("click", "#user_" + id, function () {
                     to_id = id;
-                    var from_id = <?= $_SESSION['logged_user'] ?>;
+                    var logged_user = <?= $_SESSION['logged_user'] ?>;
+                    var current_user = id;
                     $(".message-input input").removeAttr('disabled');
                     user_name = row['username'];
                     $("#chatTo").html(row['username']);
                     $(".messages ul").html("");
                     if (to_id != 0 && from_id != 0) {
-                        var toRef = firebase.database().ref().child('chats').orderByChild("to_id").equalTo('2');
-                        toRef.on("child_added", function (snap) {
-                            var rec = snap.val();
-                            console.log("-----toRef-------");
-                            console.log(rec);
-                            console.log("-----toRef-------");
-                            $("<li class='replies'>"
-                                    + "<p>" + rec['message'] + "</p></li>")
-                                    .appendTo($('.messages ul'));
-                            $.ajax({
-                                    type: 'POST',
-                                    url: "page06Ajax.php",
-                                    data: {'row': row},
-                                    async: false,
-                                    success: function (result) {
-                                        if (result.status == 1) {
-                                            var remRef = firebase.database().ref().child('chats').orderByKey().equalTo(apiKey);
-                                            remRef.on('child_added', function (snapshot) {
-                                                snapshot.ref.remove();
-                                            })
-                                        }
-                                    }
-                                });
-                        });
-                        var fromRef = firebase.database().ref().child('chats').orderByChild("from_id").equalTo(from_id);
-                        fromRef.on("value", function (snap) {
-                            snap = snap.val();
-                            console.log("-----fromRef------");
-                            console.log(snap);
-                            console.log("-----fromRef------");
+                        var toRefLog = firebase.database().ref().child('chats').orderByChild("to_id").equalTo(logged_user);
+                        var toRefCur = firebase.database().ref().child('chats').orderByChild("to_id").equalTo(current_user);
+                        var fromRefLog = firebase.database().ref().child('chats').orderByChild("from_id").equalTo(logged_user);
+                        var fromRefCur = firebase.database().ref().child('chats').orderByChild("from_id").equalTo(current_user);
+                        toRefLog.on("value",function(snap){
+                            snap = snap.val();                          
                             $.each(snap, function (apiKey, row) {
-                                console.log(snap);
-                                console.log(row);
+                                $("<li class='replies'>"
+                                + "<p>to-" + row['message'] + "-log to</p></li>")
+                                    .appendTo($('.messages ul'));
+                            });
+                        });
+                        toRefCur.on("value",function(snap){
+                            snap = snap.val();                          
+                            $.each(snap, function (apiKey, row) {
                                 $("<li class='sent'>"
-                                        + "<p>" + row['message'] + "</p></li>")
-                                        .appendTo($('.messages ul'));
+                                + "<p>to-" + row['message'] + "-cur to</p></li>")
+                                    .appendTo($('.messages ul'));
+                            });
+                        });
+                        fromRefLog.on("value",function(snap){
+                            snap = snap.val();                          
+                            $.each(snap, function (apiKey, row) {
+                              //  if(row['to_id'] === current_id){
+                                 $("<li class='replies'>"
+                                    + "<p>from-" + row['message'] + "-log from</p></li>")
+                                    .appendTo($('.messages ul'));   
+                                //}                                
+                            });
+                        });
+                        fromRefCur.on("value",function(snap){
+                            snap = snap.val();                          
+                            $.each(snap, function (apiKey, row) {
+                                $("<li class='sent'>"
+                                + "<p>from-" + row['message'] + "-cur from</p></li>")
+                                    .appendTo($('.messages ul'));
                             });
                         });
                     }
@@ -187,12 +188,36 @@ if (mysqli_num_rows($result) > 0) {
                     'to_id': to_id,
                     'from_to_combine_id': combine_id,
                     'current_time': $.now()
+                    
                 });
                 if ($.trim(message) == '') {
                     return false;
                 }
                 $('.message-input input').val(null);
             }
+            $("#status-options ul li").click(function () {
+                $("#profile-img").removeClass();
+                $("#status-online").removeClass("active");
+                $("#status-away").removeClass("active");
+                $("#status-busy").removeClass("active");
+                $("#status-offline").removeClass("active");
+                $(this).addClass("active");
+
+                if ($("#status-online").hasClass("active")) {
+                    $("#profile-img").addClass("online");
+                } else if ($("#status-away").hasClass("active")) {
+                    $("#profile-img").addClass("away");
+                } else if ($("#status-busy").hasClass("active")) {
+                    $("#profile-img").addClass("busy");
+                } else if ($("#status-offline").hasClass("active")) {
+                    $("#profile-img").addClass("offline");
+                } else {
+                    $("#profile-img").removeClass();
+                }
+                ;
+
+                $("#status-options").removeClass("active");
+            });
         </script>
 
     </body>

@@ -4,10 +4,11 @@
 class ConnectDb {
 	private $_connection;
 	private static $_instance; //The single instance
-	private $_host = "localhost";
-	private $_username = "root";
-	private $_password = "";
-	private $_database = "chat01";
+        private $_host = "localhost";
+            private $_username = "root";
+            private $_password = "";
+            private $_database = "chat01";
+	
 	/*
 	Get an instance of the Database
 	@return Instance
@@ -20,6 +21,17 @@ class ConnectDb {
 	}
 	// Constructor
 	private function __construct() {
+            if($_SERVER['REMOTE_ADDR']=='127.0.0.1' || $_SERVER['REMOTE_ADDR']=='::1'){
+                $this->_host = "localhost";
+                $this->_username = "root";
+                $this->_password = "";
+                $this->_database = "chat01";
+            }else{
+                $this->_host = "localhost";
+                $this->_username = "root";
+                $this->_password = "";
+                $this->_database = "sovoce_practice01";
+            }
 		$this->_connection = new mysqli($this->_host, $this->_username, 
 			$this->_password, $this->_database);
 	
